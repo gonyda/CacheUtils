@@ -1,13 +1,11 @@
 package com.example.cache;
 
 import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public final class CacheUtils {
 	
 	private static final Map<String, String> CACHELIST = new HashMap<>(); // 캐쉬리스트
