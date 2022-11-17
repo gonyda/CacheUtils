@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.bbsk.cache;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -6,8 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.example.cache.CacheUtils;
-import com.example.cache.JobCode;
+import com.bbsk.cache.CacheUtils;
+import com.bbsk.cache.JobCode;
 
 class CacheUtilsTests {
 

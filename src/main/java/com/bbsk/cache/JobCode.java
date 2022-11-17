@@ -1,4 +1,4 @@
-package com.example.cache;
+package com.bbsk.cache;
 
 public enum JobCode {
 	TCT("무선해지미납"),

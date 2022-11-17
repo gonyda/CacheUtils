@@ -1,4 +1,4 @@
-package com.example.cache;
+package com.bbsk.cache;
 
 import java.util.Collections;
 
