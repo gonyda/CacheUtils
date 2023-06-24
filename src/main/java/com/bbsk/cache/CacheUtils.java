@@ -34,6 +34,12 @@ public final class CacheUtils {
 		CACHELIST.put(key, value);
 		saveCacheHit(key);
 	}
+	
+	// 캐시 초기화
+	public static void initCache() {
+		CACHELIST.clear();
+		CACHEHIT.clear();
+	}
 
 	// 캐시 히트 저장
 	private static void saveCacheHit(String key) {
@@ -42,7 +48,7 @@ public final class CacheUtils {
 	
 	// 캐시 한도 체크
 	// true: 한도 초과
-	private static boolean isMaxSize() {
+	static boolean isMaxSize() {
 		return CACHELIST.size() >= MAXSIZE ? true : false;
 	}
 	

@@ -6,46 +6,49 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.bbsk.cache.CacheUtils;
-import com.bbsk.cache.JobCode;
-
 class CacheUtilsTests {
 
 	@DisplayName("캐시 저장")
 	@Test
 	void saveCache() {
-//		// given : 테스트시 미리 주어져야할 조건들은 무엇일까?
-//		String key = JobCode.MVS.toString();
-//		String value = JobCode.MVS.getJobCode();
-//		
-//		// when : 테스트 실행
-//		CacheUtils.saveCache(key, value);
-//		
-//		// then : 테스트 검증
-//		String res = CacheUtils.getCache(key);
-//		assertThat(res).isEqualTo(value);
+		CacheUtils.initCache();
+		
+		// given : 테스트시 미리 주어져야할 조건들은 무엇일까?
+		String key = JobCode.MVS.toString();
+		String value = JobCode.MVS.getJobCode();
+		
+		// when : 테스트 실행
+		CacheUtils.saveCache(key, value);
+		
+		// then : 테스트 검증
+		String res = CacheUtils.getCache(key);
+		assertThat(res).isEqualTo(value);
 	}
 	
 	@DisplayName("캐시 저장 한도")
 	@Test
 	void maxSaveCache() {
-//		// given
-//		CacheUtils.saveCache(JobCode.TCT.toString(), JobCode.TCT.getJobCode());
-//		CacheUtils.saveCache(JobCode.TCB.toString(), JobCode.TCB.getJobCode());
-//		CacheUtils.saveCache(JobCode.WIT.toString(), JobCode.WIT.getJobCode());
-//		CacheUtils.saveCache(JobCode.WIB.toString(), JobCode.WIB.getJobCode());
-//		
-//		// when
-//		CacheUtils.saveCache(JobCode.MVS.toString(), JobCode.MVS.getJobCode());
-//		boolean isMaxSize = CacheUtils.isMaxSize();
-//		
-//		// then
-//		assertThat(isMaxSize).isEqualTo(true);
+		CacheUtils.initCache(); 
+		
+		// given
+		CacheUtils.saveCache(JobCode.TCT.toString(), JobCode.TCT.getJobCode());
+		CacheUtils.saveCache(JobCode.TCB.toString(), JobCode.TCB.getJobCode());
+		CacheUtils.saveCache(JobCode.WIT.toString(), JobCode.WIT.getJobCode());
+		CacheUtils.saveCache(JobCode.WIB.toString(), JobCode.WIB.getJobCode());
+		
+		// when
+		CacheUtils.saveCache(JobCode.MVS.toString(), JobCode.MVS.getJobCode());
+		boolean isMaxSize = CacheUtils.isMaxSize();
+		
+		// then
+		assertThat(isMaxSize).isEqualTo(true);
 	}
 	
 	@DisplayName("캐시 적중률 테스트")
 	@Test
 	void priorityCache() {
+		CacheUtils.initCache();
+		
 		// 1...5 -> 1번째를 미친듯이 조회. 그후 6번째 넣었을때
 		// 2->5, 3->4 5->1, 1->3, 4->5
 		// 6, 7, 8, 9
