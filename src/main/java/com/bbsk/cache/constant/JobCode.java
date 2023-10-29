@@ -1,4 +1,4 @@
-package com.bbsk.cache;
+package com.bbsk.cache.constant;
 
 public enum JobCode {
 	TCT("무선해지미납"),

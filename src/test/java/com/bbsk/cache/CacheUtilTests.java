@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.bbsk.cache.constant.JobCode;
 import com.bbsk.cache.utils.CacheUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ class CacheUtilTests {
 		LocalDateTime plusCurrentTime = LocalDateTime.now().plusMinutes(Duration.ofMinutes(10L).toMinutes());
 		
 		// then
-		LocalDateTime expiredCacheTime = CacheUtil.getExpiredCacheTime(key);
+		LocalDateTime expiredCacheTime = CacheUtil.getCache(key).getExpiredDateTime();
 		// 만료시간이 현재시간보다 더 크다면
 		assertThat(expiredCacheTime).isAfter(minusCurrentTime);
 		// 현재시간이 만료시간보다 더 크다면
@@ -55,7 +56,7 @@ class CacheUtilTests {
 		CacheUtil.saveCache(key, value);
 		
 		// then : 테스트 검증
-		String res = CacheUtil.getCache(key);
+		String res = CacheUtil.getCache(key).getValue();
 		assertThat(res).isEqualTo(value);
 	}
 	
@@ -182,13 +183,13 @@ class CacheUtilTests {
 		
 		assertThat(CacheUtil.getCache(wib)).isNull();
 		
-		// tct hit: 13 
+		// tct hit: 12
 		for (int i = 0; i < 3; i++) {
 			CacheUtil.getCache(tct);
 		}
 		
 		
-		// ttm 4
+		// ttm 3
 		if(CacheUtil.getCache(ttm) == null) {
 			CacheUtil.saveCache(ttm, ttmjobCode);
 			for (int i = 0; i < 3; i++) {
@@ -196,8 +197,10 @@ class CacheUtilTests {
 			}
 		}
 		
+		CacheUtil.getCacheAll().forEach(e -> log.debug(e.toString()));
+		
 		assertThat(CacheUtil.getCache(trm)).isNull();
-		assertThat(CacheUtil.getCache(ttm)).isEqualTo(ttmjobCode);
+		assertThat(CacheUtil.getCache(ttm).getValue()).isEqualTo(ttmjobCode);
 		
 	}
 	

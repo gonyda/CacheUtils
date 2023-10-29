@@ -2,16 +2,18 @@ package com.bbsk.cache.utils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.bbsk.cache.domain.Cache;
+import com.bbsk.cache.domain.CacheBuilder;
+
 public final class CacheUtil {
 	
-	private static final Map<String, String> CACHELIST = new HashMap<>(); // 캐쉬리스트
-	private static final Map<String, Integer> CACHEHIT = new HashMap<>(); // 캐쉬HIT
-	private static final Map<String, LocalDateTime> CACHEDATE = new HashMap<>(); // 캐쉬 생성시간
+	private static final Map<String, Cache> CACHELIST = new HashMap<>(); // 캐쉬 리스트
 	
 	// 캐시 사이즈, 5개 제한
 	private static final int MAXSIZE = 5;
@@ -19,48 +21,33 @@ public final class CacheUtil {
 	private static final int EXPIREDMINUTES = 300;
 	
 	// 캐시 조회
-	public static String getCache(String key) {
+	public static Cache getCache(String key) {
 		LocalDateTime now = LocalDateTime.now();
 		
-		// 캐시가 있는지
-		if(CACHELIST.containsKey(key)) {
-			// 캐시 시간이 유효시간이 맞는지
-			if(Duration.between(getExpiredCacheTime(key), now).getSeconds() >= EXPIREDMINUTES) {
-				deleteCache(key);
-				return null;
-			}
-		} else {
-			return null;
-		}
-		
-		CACHEHIT.put(key, CACHEHIT.get(key) + 1);
-		CACHEDATE.put(key, now);
-		return CACHELIST.get(key);
-	}
-
-	// 캐시 삭제
-	private static void deleteCache(String key) {
-		CACHELIST.remove(key);
-		CACHEHIT.remove(key);
-		CACHEDATE.remove(key);
+		return isExistCache(key, now) ? CACHELIST.get(updateCache(key, now)) : null;
 	}
 	
-	// 캐시 저장
+	// 캐시 초기 저장
 	public static void saveCache(String key, String value) {
 		if(isMaxSize()) {
-			String minKey = getMinValue().getKey();
-			deleteCache(minKey);
+			CACHELIST.remove(getMinHitKey());
 		}
-		CACHELIST.put(key, value);
-		CACHEDATE.put(key, LocalDateTime.now());
-		CACHEHIT.put(key, 0);
+		
+		CACHELIST.put(key, createCache(value, 0, LocalDateTime.now()));
 	}
 	
-	// 캐시 초기화
+	// 캐시 업데이트, 히트 수 +1 / 생성시간 최신화
+	private static String updateCache(String key, LocalDateTime now) {
+		Cache cache = CACHELIST.get(key);
+		
+		CACHELIST.put(key, createCache(cache.getValue(), cache.getHit() + 1, now));
+		
+		return key;
+	}
+	
+	// 캐시리스트 초기화
 	public static void initCache() {
 		CACHELIST.clear();
-		CACHEHIT.clear();
-		CACHEDATE.clear();
 	}
 
 	// 캐시 한도 체크
@@ -69,18 +56,57 @@ public final class CacheUtil {
 		return CACHELIST.size() >= MAXSIZE ? true : false;
 	}
 	
-	// 최소 CACHEHIT Map 가져오기
-	private static Entry<String, Integer> getMinValue() {
-		return Collections.min(CACHEHIT.entrySet(), (v1, v2) -> v1.getValue().compareTo(v2.getValue()));
+	// 모든 캐시 가져오기
+	public static List<Cache> getCacheAll() {
+		List<Cache> list = new ArrayList<>();
+		
+		CACHELIST.values().forEach(e -> list.add(e));
+		
+		return list;
 	}
 	
-	// key에 해당하는 캐시 생성 시간 가져오기
-	public static LocalDateTime getCacheTime(String key) {
-		return CACHEDATE.get(key);
+	// 캐쉬 객체 생성
+	private static Cache createCache(String value, int hit, LocalDateTime now) {
+		return new CacheBuilder()
+					.value(value)
+					.hit(hit)
+					.createDateTime(now)
+					.build();
 	}
-  
-	// key에 해당하는 캐시 만료시간 가져오기, 생성시간+5분
-	public static LocalDateTime getExpiredCacheTime(String key) {
-		return getCacheTime(key).plusMinutes(Duration.ofMinutes(5L).toMinutes());
+	
+	// 유효한 key값인지 체크
+	private static boolean isExistCache(String key, LocalDateTime now) {
+		// 캐시가 있는지
+		if(!CACHELIST.containsKey(key)) {
+			return false;
+		}
+		
+		// 캐시 시간이 유효시간이 맞는지
+		if(getDiffTimeByExpiredAndNow(key, now) >= EXPIREDMINUTES) {
+			CACHELIST.remove(key);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	// 캐시 만료시간과 현재시간 초 차이 가져오기
+	private static long getDiffTimeByExpiredAndNow(String key, LocalDateTime now) {
+		return Duration.between(CACHELIST.get(key).getExpiredDateTime(), now).getSeconds();
+	}
+
+	// 최소 hit을 가진 cache의 key값 구하기
+	private static String getMinHitKey() {
+		String minHitKey = null;
+		int minHit = Integer.MAX_VALUE;
+
+		for (Entry<String, Cache> cache : CACHELIST.entrySet()) {
+		    if (cache.getValue().getHit() < minHit) {
+		        minHit = cache.getValue().getHit();
+		        minHitKey = cache.getKey();
+		    }
+		}
+		
+		return minHitKey;
 	}
 }
