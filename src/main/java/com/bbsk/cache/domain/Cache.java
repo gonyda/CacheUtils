@@ -1,5 +1,6 @@
 package com.bbsk.cache.domain;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import lombok.ToString;
@@ -12,12 +13,12 @@ public class Cache {
 	private LocalDateTime createDateTime; // 캐쉬 생성 시간
 	private LocalDateTime expiredDateTime; // 캐쉬 만료 시간, 생성시간 + 5분
 	
-	public Cache(String value, int hit, LocalDateTime createDateTime, LocalDateTime expiredDateTime) {
+	public Cache(String value, int hit) {
 		super();
 		this.value = value;
 		this.hit = hit;
-		this.createDateTime = createDateTime;
-		this.expiredDateTime = expiredDateTime;
+		this.createDateTime = LocalDateTime.now();;
+		this.expiredDateTime = createDateTime.plusMinutes(Duration.ofMinutes(5L).toMinutes());
 	}
 
 	public String getValue() {

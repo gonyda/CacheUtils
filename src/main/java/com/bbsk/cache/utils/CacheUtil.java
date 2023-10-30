@@ -22,9 +22,7 @@ public final class CacheUtil {
 	
 	// 캐시 조회
 	public static Cache getCache(String key) {
-		LocalDateTime now = LocalDateTime.now();
-		
-		return isExistCache(key, now) ? CACHELIST.get(updateCache(key, now)) : null;
+		return isExistCache(key) ? CACHELIST.get(updateCache(key)) : null;
 	}
 	
 	// 캐시 초기 저장
@@ -33,27 +31,7 @@ public final class CacheUtil {
 			CACHELIST.remove(getMinHitKey());
 		}
 		
-		CACHELIST.put(key, createCache(value, 0, LocalDateTime.now()));
-	}
-	
-	// 캐시 업데이트, 히트 수 +1 / 생성시간 최신화
-	private static String updateCache(String key, LocalDateTime now) {
-		Cache cache = CACHELIST.get(key);
-		
-		CACHELIST.put(key, createCache(cache.getValue(), cache.getHit() + 1, now));
-		
-		return key;
-	}
-	
-	// 캐시리스트 초기화
-	public static void initCache() {
-		CACHELIST.clear();
-	}
-
-	// 캐시 한도 체크
-	// true: 한도 초과
-	public static boolean isMaxSize() {
-		return CACHELIST.size() >= MAXSIZE ? true : false;
+		CACHELIST.put(key, getCacheObject(value, 0));
 	}
 	
 	// 모든 캐시 가져오기
@@ -65,24 +43,43 @@ public final class CacheUtil {
 		return list;
 	}
 	
+	// 캐시리스트 초기화
+	public static void initCache() {
+		CACHELIST.clear();
+	}
+	
+	// 캐시 업데이트, 히트 수 +1 / 생성시간 최신화
+	private static String updateCache(String key) {
+		Cache cache = CACHELIST.get(key);
+		
+		CACHELIST.put(key, getCacheObject(cache.getValue(), cache.getHit() + 1));
+		
+		return key;
+	}
+
+	// 캐시 한도 체크
+	// true: 한도 초과
+	private static boolean isMaxSize() {
+		return CACHELIST.size() >= MAXSIZE ? true : false;
+	}
+	
 	// 캐쉬 객체 생성
-	private static Cache createCache(String value, int hit, LocalDateTime now) {
+	private static Cache getCacheObject(String value, int hit) {
 		return new CacheBuilder()
 					.value(value)
 					.hit(hit)
-					.createDateTime(now)
 					.build();
 	}
 	
 	// 유효한 key값인지 체크
-	private static boolean isExistCache(String key, LocalDateTime now) {
+	private static boolean isExistCache(String key) {
 		// 캐시가 있는지
 		if(!CACHELIST.containsKey(key)) {
 			return false;
 		}
 		
 		// 캐시 시간이 유효시간이 맞는지
-		if(getDiffTimeByExpiredAndNow(key, now) >= EXPIREDMINUTES) {
+		if(getDiffTimeByExpiredAndNow(key, LocalDateTime.now()) >= EXPIREDMINUTES) {
 			CACHELIST.remove(key);
 			return false;
 		}
