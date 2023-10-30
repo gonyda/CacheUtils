@@ -10,14 +10,14 @@ public enum JobCode {
 	TRM("해지후할부"),
 	TTM("단말해지미납");
 
-	private String jobCode;
+	private String value;
 	
 	JobCode(String jobCode) {
-		this.jobCode = jobCode;
+		this.value = jobCode;
 	}
 	
-	public String getJobCode() {
-		return jobCode;
+	public String getValue() {
+		return value;
 		
 	}
 }

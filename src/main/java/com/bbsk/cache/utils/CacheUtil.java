@@ -89,7 +89,7 @@ public final class CacheUtil {
 	
 	// 캐시 만료시간과 현재시간 초 차이 가져오기
 	private static long getDiffTimeByExpiredAndNow(String key, LocalDateTime now) {
-		return Duration.between(CACHELIST.get(key).getExpiredDateTime(), now).getSeconds();
+		return Duration.between(now, CACHELIST.get(key).getExpiredDateTime()).getSeconds();
 	}
 
 	// 최소 hit을 가진 cache의 key값 구하기
