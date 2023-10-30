@@ -6,14 +6,14 @@ import java.time.LocalDateTime;
 import lombok.ToString;
 
 @ToString
-public class Cache {
+public class Cache <V> {
 
-	private String value; // 캐쉬 값
+	private V value; // 캐쉬 값
 	private int hit; // 캐쉬 히트 
 	private LocalDateTime createDateTime; // 캐쉬 생성 시간
 	private LocalDateTime expiredDateTime; // 캐쉬 만료 시간, 생성시간 + 5분
 	
-	public Cache(String value, int hit) {
+	public Cache(V value, int hit) {
 		super();
 		this.value = value;
 		this.hit = hit;
@@ -21,7 +21,7 @@ public class Cache {
 		this.expiredDateTime = createDateTime.plusMinutes(Duration.ofMinutes(5L).toMinutes());
 	}
 
-	public String getValue() {
+	public V getValue() {
 		return value;
 	}
 	

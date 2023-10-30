@@ -1,11 +1,12 @@
 package com.bbsk.cache.domain;
 
-public class CacheBuilder {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class CacheBuilder <V> {
 
-	private String value; // 캐쉬 값
+	private V value; // 캐쉬 값
 	private int hit; // 캐쉬 히트 
 	
-	public CacheBuilder value(String value) {
+	public CacheBuilder value(V value) {
 		this.value = value;
 		return this;
 	}
@@ -14,7 +15,7 @@ public class CacheBuilder {
 		this.hit = hit;
 		return this;
 	}
-	
+
 	public Cache build() {
 		return new Cache(value, hit);
 	}

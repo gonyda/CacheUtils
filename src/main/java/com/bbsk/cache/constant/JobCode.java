@@ -12,8 +12,8 @@ public enum JobCode {
 
 	private String value;
 	
-	JobCode(String jobCode) {
-		this.value = jobCode;
+	JobCode(String value) {
+		this.value = value;
 	}
 	
 	public String getValue() {
