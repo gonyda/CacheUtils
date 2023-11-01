@@ -76,22 +76,18 @@ public final class CacheUtil {
 	// 유효한 key값인지 체크
 	private static <K> boolean isExistCache(K key) {
 		// 캐시가 있는지
-		if(!CACHELIST.containsKey(key)) {
-			return false;
-		}
-		
-		// 캐시 시간이 유효시간이 맞는지
-		if(getDiffTimeByExpiredAndNow(key, LocalDateTime.now()) >= EXPIREDMINUTES) {
-			CACHELIST.remove(key);
-			return false;
-		}
-		
-		return true;
+		// 캐시가 만료인지
+		return CACHELIST.containsKey(key) && !isExpiredCache(key, LocalDateTime.now());
 	}
 	
-	// 캐시 만료시간과 현재시간 초 차이 가져오기
-	private static <K> long getDiffTimeByExpiredAndNow(K key, LocalDateTime now) {
-		return Duration.between(now, CACHELIST.get(key).getExpiredDateTime()).getSeconds();
+	// 캐시가 만료되었는지
+	private static <K> boolean isExpiredCache(K key, LocalDateTime now) {
+		if(Duration.between(now, CACHELIST.get(key).getExpiredDateTime()).getSeconds() >= EXPIREDMINUTES) {
+			CACHELIST.remove(key);
+			return true;
+		}
+		
+		return false;
 	}
 
 	// 최소 hit을 가진 cache의 key값 구하기
