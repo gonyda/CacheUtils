@@ -2,9 +2,7 @@ package com.bbsk.cache.utils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -36,12 +34,8 @@ public final class CacheUtil {
 	}
 	
 	// 모든 캐시 가져오기
-	public static List<Cache> getCacheAll() {
-		List<Cache> list = new ArrayList<>();
-		
-		CACHELIST.values().forEach(e -> list.add(e));
-		
-		return list;
+	public static Object[] getCacheAll() {
+		return CACHELIST.values().toArray();
 	}
 	
 	// 캐시리스트 초기화
